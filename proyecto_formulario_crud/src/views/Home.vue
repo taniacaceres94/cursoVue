@@ -1,82 +1,29 @@
 <template>
-  <form @submit.prevent="procesarFormulario">
-    <!-- Text -->
-    <input
-     type="text"
-     class="form-control m-2"
-     placeholder="Ingrese nombre"
-     v-model.trim="tarea.nombre"
-    >
-
-  <!-- Checkbox -->
-    <div class="form-check form-check-inline">
-      <input
-       type="checkbox"
-       id="check-1"
-       class="form-check-input"
-       v-model="tarea.categorias"
-       value="Javascript">  
-       <label for="check-1" class="form-check-label">Javascript</label>    
-    </div>
-
-    <div class="form-check form-check-inline">
-      <input
-       type="checkbox"
-       id="check-2"
-       class="form-check-input"
-       v-model="tarea.categorias"
-       value="Node js">  
-       <label for="check-2" class="form-check-label">Node js</label>    
-    </div>
-    <!-- Radio -->
-    <div class="mt-2">
-      <div class="form-check form-check-inline">
-        <input 
-        type="radio" 
-        id="radio-1"
-        class="form-check-input"
-        value="urgente"
-        v-model="tarea.estado">
-        <label for="radio-1" class="form-check-label">Urgente</label>
-      </div>
-
-      <div class="form-check form-check-inline">
-        <input 
-        type="radio" 
-        id="radio-2"
-        class="form-check-input"
-        value="relax"
-        v-model="tarea.estado">
-        <label for="radio-2" class="form-check-label">Relax</label>
-      </div>
-    </div>
-
-    <!-- Number -->
-    <div class="mt-2">
-      <input 
-        type="number"
-        class="form-control"
-        v-model.number="tarea.numero">
-
-    </div>
-
-    <button type="submit" :disabled="bloquear" class="btn btn-dark mt-2 btn-block">Procesar</button>
-
-  </form>
-  <p>{{ tarea }}</p>
+  <div>
+    <form @submit.prevent="procesarFormulario">
+      <Input :tarea="tarea"/>
+    </form>
+  
+    <ListaTareas/>
+  </div>
 </template>
 
 <script>
-
+// Imports //
+import Input from '../components/Input'
+import ListaTareas from '../components/ListaTareas'
+import { mapActions } from 'vuex'
+const shortid = require('shortid')
 
 export default {
   name: 'Home',
   components: {
-    
+    Input, ListaTareas
   },
   data() {
     return {
       tarea: {
+        id: '',
         nombre: '',
         categorias: [],
         estado: '',
@@ -85,26 +32,26 @@ export default {
     }
   },
   methods:{
+    ...mapActions(['setTareas']),
     procesarFormulario(){
-      console.log(this.tarea)
       if (this.tarea.nombre.trim() === '') {
-        console.log('Campo vacio')
         return
       }
-      console.log('No esta vacio')
+
+      // Generar id
+      this.tarea.id = shortid.generate()
+      
+
       // Enviar los datos
+      this.setTareas(this.tarea)
 
       this.tarea = {
+        id: '',
         nombre: '',
         categorias: [],
         estado: '',
         numero: 0,
       }
-    }
-  },
-  computed: {
-    bloquear(){
-      return this.tarea.nombre.trim() === '' ? true : false 
     }
   }
 
